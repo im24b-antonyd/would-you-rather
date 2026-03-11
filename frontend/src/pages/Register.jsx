@@ -18,6 +18,44 @@ export default function Register() {
         password: '',
     })
 
+    const wallpaperOptions = [
+        { label: "river", value: "/wallpapers/wallpaper_login.jpg" },
+        { label: "road", value: "/wallpapers/wallpaper_road.jpg" },
+        { label: "curtains", value: "/wallpapers/wallpaper_curtains.jpeg" },
+        { label:"mountains", value: "/wallpapers/wallpaper_mountains.webp" },
+        { label:"peak", value: "/wallpapers/wallpaper_peak.jpg" },
+        { label:"autumn", value: "/wallpapers/wallpaper_autumn.jpg" },
+        { label:"highway", value: "/wallpapers/wallpaper_highway.jpg" },
+        { label:"springfall", value: "/wallpapers/wallpaper_springfall.jpg" },
+        { label:"panorama", value: "/wallpapers/wallpaper_panorama.jpg" },
+        { label:"chill-spot", value: "/wallpapers/wallpaper_chill_spot.jpg" },
+        { label:"alien-mountains", value: "/wallpapers/wallpaper_alien_mountains.webp" },
+        { label:"pond", value: "/wallpapers/wallpaper_pond.jpg" },
+        { label:"winter", value: "/wallpapers/wallpaper_winter.webp" },
+        { label:"fantasy-saturn", value: "/wallpapers/wallpaper_fantasy_saturn.jpg" },
+        { label:"black-hole", value: "/wallpapers/wallpaper_black_hole.webp" },
+        { label:"earth", value: "/wallpapers/wallpaper_earth.jpg" },
+        { label:"dark-paradise", value: "/wallpapers/wallpaper_dark_paradise.jpg" },
+        { label:"supernova", value: "/wallpapers/wallpaper_supernova.jpg" },
+        { label:"hyperspace", value: "/wallpapers/wallpaper_hyperspace.jpg" },
+        { label:"space", value: "/wallpapers/wallpaper_space.jpg" },
+        { label:"system", value: "/wallpapers/wallpaper_system.jpg" },
+        { label:"heat-death", value: "/wallpapers/wallpaper_heat_death.jpg" },
+        { label:"star", value: "/wallpapers/wallpaper_star.jpg" },
+        { label:"saturn", value: "/wallpapers/wallpaper_saturn.jpg" },
+        { label:"twin-planets", value: "/wallpapers/wallpaper_twin_planets.jpg" },
+        { label:"bluestar", value: "/wallpapers/wallpaper_bluestar.jpg" },
+        { label:"blue-galaxy", value: "/wallpapers/wallpaper_blue_galaxy.jpg" },
+        { label:"collision", value: "/wallpapers/wallpaper_collision.jpg" },
+        { label:"sky", value: "/wallpapers/wallpaper_sky.webp" },
+        { label:"planetary", value: "/wallpapers/wallpaper_planetary.jpg" },
+        { label:"noon", value: "/wallpapers/wallpaper_noon.jpg" },
+    ]
+
+    const [selectedWallpaper, setSelectedWallpaper] = useState(
+        localStorage.getItem("selectedWallpaper") || wallpaperOptions[0].value
+    )
+
     const navigator = useNavigate()
 
 
@@ -35,6 +73,10 @@ export default function Register() {
             setCurrentUser(savedUser);
         }
     }, [])
+
+    useEffect(() => {
+        localStorage.setItem("selectedWallpaper", selectedWallpaper)
+    }, [selectedWallpaper]);
 
     function SignUp() {
         const user = {email, username, password, avatarUrl}
@@ -104,13 +146,29 @@ export default function Register() {
     }
 
     return (
-        <div className="bg-slate-100 h-screen flex justify-center items-center">
-            <form action="/login" className="bg-white w-90 flex flex-col rounded-sm shadow-md p-8"
+        <div
+            className="bg-cover bg-center h-screen flex justify-center items-center"
+            style={{ backgroundImage: `url('${selectedWallpaper}')` }}
+        >
+            <div className="absolute top-4 right-4">
+                <select
+                    className="bg-white/80 border border-slate-300 rounded-md p-2 text-sm text-gray-700 cursor-pointer"
+                    value={selectedWallpaper}
+                    onChange={e => setSelectedWallpaper(e.target.value)}
+                >
+                    {wallpaperOptions.map(option => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
+                </select>
+            </div>
+            <form action="/login" className="bg-white/40 w-90 flex flex-col rounded-sm shadow-md p-8"
                   onSubmit={() => {
                       SignUp()
                   }}
             >
-                <h1 className="text-2xl font-bold text-center">Sign Up</h1>
+                <h1 className="text-2xl font-bold text-center text-white">Sign Up</h1>
                 <div className="flex flex-col gap-8 pb-8 pt-8">
                     <div>
                         <input
@@ -166,7 +224,7 @@ export default function Register() {
                 >Sign Up
                 </button>
                 <div className="flex gap-1 pt-6 justify-center text-sm">
-                    <p className="text-gray-500 ">
+                    <p className="text-white ">
                         Already have an account?</p>
                     <Link to="/login" className="text-blue-500 cursor-pointer">Sign In</Link>
                 </div>

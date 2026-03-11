@@ -209,7 +209,7 @@ export default function Login() {
                                    toggleCheckbox()
                                }}
                         />
-                        <label className="ms-1.5 text-gray-500">
+                        <label className="ms-1.5 text-white">
                             Remember Me
                         </label>
                     </div>
@@ -224,7 +224,7 @@ export default function Login() {
                 >Sign In
                 </button>
                 <div className="flex gap-1 pt-6 justify-center text-sm">
-                    <p className="text-gray-500 ">Don't have an account?</p>
+                    <p className="text-white ">Don't have an account?</p>
                     <Link to="/register" className="text-blue-500 cursor-pointer hover:underline">Create one</Link>
                 </div>
             </form>
