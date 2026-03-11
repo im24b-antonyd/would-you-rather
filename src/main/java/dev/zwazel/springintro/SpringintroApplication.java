@@ -163,6 +163,7 @@ public class SpringintroApplication {
      *
      * @param repository User Repository to interact with the Database. Dependency Injected by Spring.
      */
+    /*
     @Bean
     CommandLineRunner runner(UserRepository repository) {
         return args -> {
@@ -192,4 +193,5 @@ public class SpringintroApplication {
             }
         };
     }
+     */
 }

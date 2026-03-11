@@ -9,7 +9,12 @@ import lombok.NoArgsConstructor;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -34,7 +39,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
-    
+
     /** Unique identifier generated as UUID */
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -43,17 +48,55 @@ public class User implements UserDetails {
     /** Unique email - used as username for authentication */
     @Column(unique = true)
     private String email;
-    
+
+    @Column(unique = true)
+    private String username;
+
+    private String displayName;
+
+    private String avatarUrl;
+
     /** Hashed password - never store plain text passwords! */
     private String password;
 
     /** User's role which determines their authorities/permissions */
     @Enumerated(EnumType.STRING)
-    private Role role;
+    @Column(name="role", nullable = false)
+    private Role role = Role.USER; //default;
+
+    /*
+    public User(String username, String displayName, String avatarUrl) {
+        this.username = username;
+        this.displayName = displayName;
+        this.avatarUrl = avatarUrl;
+    }
+
+
+
+    public User(UUID id, String username, String email, String password, String displayName, String avatarUrl) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.displayName = displayName;
+        this.avatarUrl = avatarUrl;
+    }
+     */
+
+
+    @PrePersist
+    public void prePersist() {
+        if (displayName == null){
+            displayName = username;
+        }
+        else if (role == null) {
+            role = Role.USER; // set default if null
+        }
+    }
 
     /**
      * Maps the user's role to a collection of granted authorities.
-     * 
+     *
      * <p>Spring Security uses this to determine what actions a user can perform.
      * For example: an ADMIN role might have READ, WRITE, and DELETE privileges.
      *
@@ -67,14 +110,19 @@ public class User implements UserDetails {
 
     /**
      * Returns the username used for authentication (in this case, the email).
-     * 
+     *
      * <p>Spring Security calls this to get the principal identifier during authentication.
      *
      * @return the user's email as username
      */
-    @Override
-    @NullMarked
-    public String getUsername() {
-        return email;
+
+    /*
+    public String saveAvatar(MultipartFile file) throws IOException {
+        String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        Path path = Paths.get("uploads/avatar/" + filename);
+        Files.copy(file.getInputStream(), path);
+
+        return "/uploads/avatar/" + filename;
     }
+     */
 }
