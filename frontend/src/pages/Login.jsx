@@ -1,7 +1,7 @@
 import {useContext, useEffect, useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {CurrentUserContext} from "../components/CurrentUserContext.jsx";
-import {listUsers, updateUser} from "../services/UserService.js";
+import {listUsers} from "../services/UserService.js";
 
 export default function Login() {
     const [email, setEmail] = useState("")
@@ -19,24 +19,12 @@ export default function Login() {
 
     function SignIn() {
         if (validateForm()) {
-            const user = data.find(item => item.email === email)
-            const currentDate = new Date()
-            const userData = {
-                email: user.email,
-                displayName: user.displayName,
-                username: user.username,
-                password: user.password,
-                avatarUrl: user.avatarUrl,
-                registerDate: user.registerDate,
-                lastLoginDate: currentDate,
-                rememberMe: isChecked
-            }
-            updateUser(user.id, userData).then((response) => {
-                console.log(response)
-            })
+            const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD
+            const username = data.find(item => item.email === email)
             setCurrentUser({
                 email: email,
-                username: user.username,
+                username: username.username,
+                last_login_date: today,
                 _remember_me: isChecked
             });
             return navigator("/")
@@ -117,7 +105,7 @@ export default function Login() {
     }, [currentUser]);
 
     return (
-        <div className="bg-[url(/tuffimages.jpg)] bg-no-repeat text-center bg-cover h-screen flex justify-center items-center">
+        <div className="bg-slate-100 h-screen flex justify-center items-center">
             <form action="/" className="bg-white w-90 flex flex-col rounded-sm shadow-md p-8"
                   onSubmit={() => {
                       SignIn()
