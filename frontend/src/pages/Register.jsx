@@ -11,7 +11,6 @@ export default function Register() {
     const [data, setData] = useState([])
     const {currentUser, setCurrentUser} = useContext(CurrentUserContext)
 
-
     const [errors, setErrors] = useState({
         email: '',
         username: '',
@@ -19,7 +18,6 @@ export default function Register() {
     })
 
     const navigator = useNavigate()
-
 
     const loggedIn = Boolean(Object.keys(currentUser).length > 0);
 
@@ -37,10 +35,21 @@ export default function Register() {
     }, [])
 
     function SignUp() {
-        const user = {email, username, password, avatarUrl}
+        const user = {
+            email: email,
+            username: username,
+            password: password,
+            avatarUrl: avatarUrl,
+            displayName: username,
+            registerDate: new Date(),
+            lastLoginDate: null,
+            rememberMe: false
+        }
         if (validateForm()) {
             createUser(user).then((response) => {
                 navigator("/login")
+            }).catch(err => {
+                console.error(err)
             })
         }
     }
@@ -63,38 +72,32 @@ export default function Register() {
         if (!email.trim()) {
             errorsCopy.email = "Email is required";
             valid = false
-        }
-        else if (emailExist) {
+        } else if (emailExist) {
             errorsCopy.email = "Email already exists";
             valid = false
-        }
-        else {
+        } else {
             errorsCopy.email = '';
         }
         if (!username.trim()) {
             errorsCopy.username = "Username is required";
-            valid = false        }
-        else if (username.length < 3) {
+            valid = false
+        } else if (username.length < 3) {
             errorsCopy.username = "Username is too short"
             valid = false
-        }
-        else if (usernameExist) {
+        } else if (usernameExist) {
             errorsCopy.username = "Username already exists"
             valid = false
-        }
-        else {
+        } else {
             errorsCopy.username = '';
 
         }
         if (!password.trim()) {
             errorsCopy.password = "Password is required";
             valid = false
-        }
-        else if (password.length < 8) {
+        } else if (password.length < 8) {
             errorsCopy.password = "Password is too short"
             valid = false
-        }
-        else {
+        } else {
             errorsCopy.password = ''
         }
 

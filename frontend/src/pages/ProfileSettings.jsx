@@ -48,7 +48,10 @@ export default function ProfileSettings() {
                 displayName: displayName,
                 password: data.password,
                 avatarUrl: data.avatarUrl,
-                email: data.email
+                email: data.email,
+                rememberMe: data.rememberMe,
+                registerDate: data.registerDate,
+                lastLoginDate: data.lastLoginDate
             }
             updateUser(data.id, user).then((response) => {
                 setData(response.data)
@@ -145,6 +148,8 @@ export default function ProfileSettings() {
         return () => clearTimeout(handler)
     }, [username, displayName])
 
+    const registerDate = new Date(data.registerDate)
+
     return (
         <div id="changePasswordSettings" className="p-8 gap-10 flex-col flex ">
             <div className="flex items-center gap-6">
@@ -156,7 +161,7 @@ export default function ProfileSettings() {
             </div>
             <div className="text-neutral-500 flex gap-6 flex-col">
                 <h1 className="text-lg text-black font-bold">Details</h1>
-                <p>Registration Date: 10.May.2007</p>
+                <p>Registration Date: {registerDate.toLocaleDateString("de-DE")}</p>
                 <form onSubmit={async (e) => {
                     await handleSubmit(e)
                 }}

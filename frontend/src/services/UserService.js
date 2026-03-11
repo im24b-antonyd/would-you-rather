@@ -11,4 +11,4 @@ export const findUser = (userId) => {
     return axios.get(`${REST_API_BASE_URL}${userId}`)
 }
 export const updateUser = (userId, user) => axios.put(`${REST_API_BASE_URL}${userId}`, user)
-
+export const deleteUser = (userId) => axios.delete(`${REST_API_BASE_URL}${userId}`)

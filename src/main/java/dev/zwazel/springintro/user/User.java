@@ -56,6 +56,13 @@ public class User implements UserDetails {
 
     private String avatarUrl;
 
+    private boolean rememberMe;
+
+    private String registerDate;
+
+    private String lastLoginDate;
+
+
     /** Hashed password - never store plain text passwords! */
     private String password;
 

@@ -52,6 +52,7 @@ public class UserServiceImpl implements UserService{
         user.setPassword(updatedUser.getPassword());
         user.setDisplayName(updatedUser.getDisplayName());
         user.setAvatarUrl(updatedUser.getAvatarUrl());
+        user.setLastLoginDate(updatedUser.getLastLoginDate());
 
         return userRepository.save(user);
     }
