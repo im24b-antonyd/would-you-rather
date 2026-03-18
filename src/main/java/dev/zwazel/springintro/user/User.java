@@ -2,10 +2,7 @@ package dev.zwazel.springintro.user;
 
 import dev.zwazel.springintro.security.Role;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -37,6 +35,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Data
 @Entity
+@Setter
+@Getter
 @Table(name = "users")
 public class User implements UserDetails {
 
@@ -56,11 +56,11 @@ public class User implements UserDetails {
 
     private String avatarUrl;
 
-    private boolean rememberMe;
+    private Boolean rememberMe;
 
-    private String registerDate;
+    private Instant createdAt = Instant.now();
 
-    private String lastLoginDate;
+    private Instant lastLoginDate = Instant.now();
 
 
     /** Hashed password - never store plain text passwords! */
@@ -79,7 +79,6 @@ public class User implements UserDetails {
     }
 
 
-
     public User(UUID id, String username, String email, String password, String displayName, String avatarUrl) {
         this.id = id;
         this.username = username;
@@ -93,11 +92,20 @@ public class User implements UserDetails {
 
     @PrePersist
     public void prePersist() {
+        Instant now = Instant.now();
         if (displayName == null){
             displayName = username;
         }
-        else if (role == null) {
+        if (createdAt == null)
+            createdAt = now;
+        if (role == null) {
             role = Role.USER; // set default if null
+        }
+        if(avatarUrl == null) {
+            avatarUrl = "/uploads/avatar/default-avatar.jpg";
+        }
+        if (rememberMe == null) {
+            rememberMe = false;
         }
     }
 

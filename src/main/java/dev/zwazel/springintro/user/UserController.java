@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @CrossOrigin("*")
@@ -26,20 +27,32 @@ public class UserController {
     private final UserService service;
 
 
-    @GetMapping("/{id}")
-    public ResponseEntity<User> findUser(@PathVariable("id") UUID userId){
-        User user = service.findUser(userId);
-        return ResponseEntity.ok(user);
+    @GetMapping("/byId/{id}")
+    public ResponseEntity<UserDTO> findUser(@PathVariable("id") UUID userId){
+        UserDTO userDTO = service.findUser(userId);
+        return ResponseEntity.ok(userDTO);
+    }
+
+    @GetMapping("/byUsername/{username}")
+    public ResponseEntity<UserDTO> findUserByUsername(@PathVariable("username") String username){
+        UserDTO userDTO = service.findUserByUsername(username);
+        return ResponseEntity.ok(userDTO);
+    }
+
+    @GetMapping("/byEmail/{email}")
+    public ResponseEntity<UserDTO> findUserByEmail(@PathVariable("email") String email){
+        UserDTO userDTO = service.findUserByEmail(email);
+        return ResponseEntity.ok(userDTO);
     }
 
     /*
-    @GetMapping("/{username}")
-    public ResponseEntity<User> findUser(@PathVariable("username") String username){
-        User user = service.findUserByUsername(username);
-        return ResponseEntity.ok(user);
+    @PostMapping("/checkPassword")
+    public boolean isPasswordCorrect(String password, String email){
+        Optional<User> userOpt = service.findUserByEmail(email);
+        User user = userOpt.orElseThrow(() -> new UserNotFoundByUsername(email));
+        return password.equals(user.getPassword());
     }
      */
-
     /*
     @GetMapping("/{username}")
     public UserProfileDTO findUserByUsername(@PathVariable("username") String username) {
@@ -52,26 +65,26 @@ public class UserController {
         );    }
     */
     @PostMapping("/register")
-    public ResponseEntity<User> createUser(@RequestBody User input) {
-        User savedUser = service.createUser(input);
+    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO input) {
+        UserDTO savedUser = service.createUser(input);
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<User>> all() {
-        List<User> users = service.all();
+    public ResponseEntity<List<UserDTO>> all() {
+        List<UserDTO> users = service.all();
         return ResponseEntity.ok(users);
     }
 
     //Update User
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable("id") UUID userId, @RequestBody User input){
-        User user = service.updateUser(userId, input);
+    @PutMapping("/update/{id}")
+    public ResponseEntity<UserDTO> updateUser(@PathVariable("id") UUID userId, @RequestBody UserDTO input){
+        UserDTO user = service.updateUser(userId, input);
         return ResponseEntity.ok(user);
     }
 
     //delete User
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable("id") UUID userId){
         service.deleteUser(userId);
         return ResponseEntity.ok("User successfully deleted!");

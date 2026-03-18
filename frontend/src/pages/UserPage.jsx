@@ -1,5 +1,5 @@
 import {useContext, useEffect, useRef, useState} from "react";
-import {findUser, listUsers, updateUser} from "../services/UserService.js";
+import {findUser, findUserByUsername, listUsers, updateUser} from "../services/UserService.js";
 import {Link, replace, useNavigate, useParams} from "react-router-dom";
 import NotFound from "./NotFound.jsx";
 import {CurrentUserContext} from "../components/CurrentUserContext.jsx";
@@ -13,23 +13,15 @@ export default function UserPage() {
     const fileUploadRef = useRef()
     const params = useParams();
 
+
     const navigator = useNavigate()
 
     useEffect(() => {
-        const fetchData = async () => {
-            const response = await listUsers();
-            const allUsers = response.data
-
-            try {
-                const user = allUsers.find(item => item.username.toLowerCase() === params.username.toLowerCase().replace("@", ""))
-                if (!user) return;
-                const response = await findUser(user.id);
-                setData(response.data)
-            } catch (err) {
-                console.error(err)
-            }
-        }
-        fetchData()
+        findUserByUsername(params.username.replace("@", "")).then((response) => {
+            setData(response.data)
+        }).catch(err => {
+            console.error(err)
+        })
     }, [params]);
 
     useEffect(() => {
@@ -50,7 +42,6 @@ export default function UserPage() {
             const uploadedFile =
                 e.target.files[0];
 
-            console.log(uploadedFile)
 
             const newAvatarUrl = `/uploads/avatar/${uploadedFile.name}`
             const updatedUser = {
@@ -63,16 +54,14 @@ export default function UserPage() {
 
             const updateResponse = await updateUser(data.id, updatedUser);
             setAvatarUrl(newAvatarUrl)
-            console.log("RESPONSE:", updateResponse.data);
-            console.log("AVATAR:", updateResponse.data.avatarUrl);
-            console.log("SENDING:", updatedUser);
         } catch (err) {
             console.error(err)
         }
     }
 
-    const usernameOnDisplay = `@${data.username}`
-    return data.username ? (
+    //const usernameOnDisplay = `@${data.username}`
+
+    return data ? (
         <div className="">
             <div className="p-4 flex rounded-md gap-4 justify-between items-center ">
                 <div className="flex items-center flex-1 gap-4 p-6 ">
@@ -101,7 +90,7 @@ export default function UserPage() {
 
                     <div className="flex flex-col gap-2">
                         <p className="text-3xl font-bold">{data.displayName}</p>
-                        <p className="text-lg">{usernameOnDisplay.toLowerCase()}</p>
+                        <p className="text-lg">@{data.username}</p>
                     </div>
                 </div>
                 <div>

@@ -7,18 +7,19 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface UserService {
-    List<User> all();
+    List<UserDTO> all();
 
     @Transactional
-    User createUser(User input);
+    UserDTO createUser(UserDTO input);
 
-    User findUser(UUID id);
+    UserDTO findUser(UUID id);
 
-    User findUserByUsername(String username);
+    UserDTO findUserByUsername(String username);
+
+    UserDTO findUserByEmail(String email);
 
     //UserProfileDTO findUserByUsername(String username);
-
-    User updateUser(UUID id, User updatedUser);
+    UserDTO updateUser(UUID id, UserDTO updatedUser);
 
     void deleteUser(UUID id);
 }

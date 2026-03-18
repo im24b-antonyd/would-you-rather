@@ -116,6 +116,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
      * @see org.springframework.security.core.userdetails.UsernameNotFoundException
      */
     Optional<User> findUserByEmail(String email);
-
     Optional<User> findUserByUsername(String username);
+    boolean existsByUsername(String username);
+    boolean existsByEmail(String email);
 }

@@ -163,16 +163,18 @@ public class SpringintroApplication {
      *
      * @param repository User Repository to interact with the Database. Dependency Injected by Spring.
      */
-    /*
+
     @Bean
     CommandLineRunner runner(UserRepository repository) {
         return args -> {
             String superStrongPassword = "StrongP@ssw0rd!";
+            String username = "Lucas";
             String userMail = "student@example.com";
             if (repository.findUserByEmail(userMail).isEmpty()) {
                 System.out.println("Inserting User into DB...");
                 User user = new User();
                 user.setEmail(userMail);
+                user.setUsername(username);
                 user.setPassword(superStrongPassword);
                 user.setRole(Role.USER);
                 repository.save(user);
@@ -181,11 +183,13 @@ public class SpringintroApplication {
             }
 
             String adminMail = "admin@example.com";
+            String AdminUsername = "Michelle";
             if (repository.findUserByEmail(adminMail).isEmpty()) {
                 System.out.println("Inserting Admin into DB...");
                 User admin = new User();
                 admin.setEmail(adminMail);
                 admin.setPassword(superStrongPassword);
+                admin.setUsername(AdminUsername);
                 admin.setRole(Role.ADMIN);
                 repository.save(admin);
             } else {
@@ -193,5 +197,4 @@ public class SpringintroApplication {
             }
         };
     }
-     */
 }

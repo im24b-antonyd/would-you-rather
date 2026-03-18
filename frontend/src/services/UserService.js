@@ -8,7 +8,16 @@ export const listUsers = () => {
 
 export const createUser = (user) => axios.post(`${REST_API_BASE_URL}register`, user)
 export const findUser = (userId) => {
-    return axios.get(`${REST_API_BASE_URL}${userId}`)
+    return axios.get(`${REST_API_BASE_URL}byId/${userId}`)
 }
-export const updateUser = (userId, user) => axios.put(`${REST_API_BASE_URL}${userId}`, user)
-export const deleteUser = (userId) => axios.delete(`${REST_API_BASE_URL}${userId}`)
+export const findUserByUsername = (username) => {
+    return axios.get(`${REST_API_BASE_URL}byUsername/${username}`)
+
+}
+
+export const findUserByEmail = (username) => {
+    return axios.get(`${REST_API_BASE_URL}byUsername/${username}`)
+}
+
+export const updateUser = (userId, user) => axios.put(`${REST_API_BASE_URL}update/${userId}`, user)
+export const deleteUser = (userId) => axios.delete(`${REST_API_BASE_URL}delete/${userId}`)
