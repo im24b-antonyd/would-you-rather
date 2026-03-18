@@ -1,5 +1,6 @@
 package dev.zwazel.springintro.user;
 
+import dev.zwazel.springintro.security.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,10 @@ public class UserServiceImpl implements UserService{
     @Transactional
     @Override
     public User createUser(User user) {
+        // Ensure the role is set to a default if it's null
+        if (user.getRole() == null) {
+            user.setRole(Role.USER);
+        }
         return userRepository.save(user);
     }
 
@@ -49,9 +54,12 @@ public class UserServiceImpl implements UserService{
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         user.setEmail(updatedUser.getEmail());
         user.setUsername(updatedUser.getUsername());
-        user.setPassword(updatedUser.getPassword());
+        user.setPassword(updatedUser.getPassword()); // Password encoding should happen here too if updated
         user.setDisplayName(updatedUser.getDisplayName());
         user.setAvatarUrl(updatedUser.getAvatarUrl());
+        if (updatedUser.getRole() != null) { // Allow updating role, but ensure it's not null if provided
+            user.setRole(updatedUser.getRole());
+        }
 
         return userRepository.save(user);
     }
