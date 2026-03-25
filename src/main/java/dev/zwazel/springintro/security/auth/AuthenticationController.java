@@ -3,6 +3,7 @@ package dev.zwazel.springintro.security.auth;
 import dev.zwazel.springintro.security.auth.payload.AuthenticationRequest;
 import dev.zwazel.springintro.security.auth.payload.AuthenticationResponse;
 import dev.zwazel.springintro.security.auth.payload.RegisterRequest;
+import dev.zwazel.springintro.security.auth.service.AuthenticationService;
 import dev.zwazel.springintro.security.jwt.JwtService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -132,6 +133,8 @@ public class AuthenticationController {
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .body(authenticationResponse);
     }
+
+
 
     /**
      * Authenticates a user and returns a JWT token.

@@ -1,21 +1,21 @@
 package dev.zwazel.springintro.user;
 
+import dev.zwazel.springintro.exceptions.ResourceNotFoundException;
+import dev.zwazel.springintro.user.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<UserDTO> all() {
@@ -51,20 +51,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO findUser(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         return UserMapper.mapToUserDTO(user);
     }
 
     @Override
     public UserDTO findUserByUsername(String username) {
-        User user = userRepository.findUserByUsername(username).orElseThrow(() -> new UserNotFoundByUsername(username));
+        User user = userRepository.findUserByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
         return UserMapper.mapToUserDTO(user);
     }
 
     @Override
     public UserDTO findUserByEmail(String email) {
         User user = userRepository.findUserByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
         return UserMapper.mapToUserDTO(user);
     }
 
@@ -78,15 +78,16 @@ public class UserServiceImpl implements UserService {
      */
 
     @Override
-    public UserDTO updateUser(UUID id, UserDTO updatedUser) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+    public UserDTO updateUser(String id, UserDTO updatedUser) {
+        UUID uId = UUID.fromString(id);
+        User user = userRepository.findById(uId).orElseThrow(() -> new ResourceNotFoundException(id));
         user.setEmail(updatedUser.getEmail() != null
                 ? updatedUser.getEmail().toLowerCase()
                 : user.getEmail().toLowerCase());
 
-        user.setPassword(updatedUser.getPassword() != null
-                ? updatedUser.getPassword()
-                : user.getPassword());
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        }
 
         user.setDisplayName(updatedUser.getDisplayName() != null
                 ? updatedUser.getDisplayName()
@@ -97,12 +98,12 @@ public class UserServiceImpl implements UserService {
                 : user.getAvatarUrl());
 
         user.setLastLoginDate(updatedUser.getLastLoginDate() != null
-                ? updatedUser.getLastLoginDate()
+                ? Instant.now()
                 : user.getLastLoginDate());
 
         user.setUsername(updatedUser.getUsername() != null
-                ? updatedUser.getUsername()
-                : user.getUsername());
+                ? updatedUser.getUsername().toLowerCase()
+                : user.getUsername().toLowerCase());
 
 
         User savedUser = userRepository.save(user);
@@ -111,8 +112,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
-        userRepository.deleteById(id);
+        userRepository.delete(user);
     }
 }

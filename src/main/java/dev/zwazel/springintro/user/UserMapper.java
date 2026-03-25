@@ -1,5 +1,7 @@
 package dev.zwazel.springintro.user;
 
+import dev.zwazel.springintro.user.dto.UserDTO;
+
 public class UserMapper {
     public static UserDTO mapToUserDTO(User user) {
         return new UserDTO(

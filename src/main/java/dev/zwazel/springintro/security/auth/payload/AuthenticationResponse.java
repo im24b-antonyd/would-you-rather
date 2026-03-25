@@ -87,7 +87,6 @@ public class AuthenticationResponse {
      * </ul>
      */
     private String email;
-
     /**
      * List of role names for the user (human-readable authorities).
      *

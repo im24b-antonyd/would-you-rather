@@ -1,5 +1,11 @@
 import {useContext, useEffect, useState} from "react";
-import {createUser, findUser, listUsers, updateUser} from "../services/UserService.js";
+import {
+    createUser,
+    findUser,
+    findUserByUsername,
+    listUsers,
+    updateUser
+} from "../services/UserService.js";
 import {CurrentUserContext} from "../components/CurrentUserContext.jsx";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
@@ -77,25 +83,19 @@ export default function ProfileSettings() {
     }
 
     useEffect(() => {
-        const fetchData = async () => {
-            const response = await listUsers();
-            const allUsers = response.data
-
-            try {
-                const user = allUsers.find(item => item.username.toLowerCase() === currentUser.username.toLowerCase())
-                if (!user) return;
-                const response = await findUser(user.id);
+        try {
+            findUserByUsername(currentUser.username.replace("@", "")).then((response) => {
                 setData(response.data)
                 setAvatarUrl(response.data.avatarUrl)
                 setDisplayName(response.data.displayName)
                 setUsername(response.data.username)
                 setEmail(response.data.email)
                 setDisplayName(response.data.displayName)
-            } catch (err) {
-                console.error(err)
-            }
+            });
+        } catch (err) {
+            console.error(err)
         }
-        fetchData()
+
     }, [currentUser]);
 
     async function validateForm() {
@@ -103,9 +103,7 @@ export default function ProfileSettings() {
         setUsername(username)
         setDisplayName(displayName)
         const errorsCopy = {...errors}
-        const response = await listUsers();
-        const allUsers = response.data
-        const usernameExist = allUsers.find(item => item.username.toLowerCase() === username.toLowerCase())
+        const usernameExist = isUsernameTaken(username)
 
         if (!username.trim()) {
             errorsCopy.username = "Username is required";
@@ -119,7 +117,7 @@ export default function ProfileSettings() {
         } else if (username.length > 30) {
             errorsCopy.username = "Username is too long"
             valid = false
-        } else if (usernameExist && username !== data.username) {
+        } else if (usernameExist && username.toLowerCase() !== data.username.toLocaleLowerCase()) {
             errorsCopy.username = "Username is already taken"
             valid = false
         } else {
@@ -153,7 +151,7 @@ export default function ProfileSettings() {
     return (
         <div id="changePasswordSettings" className="p-8 gap-10 flex-col flex ">
             <div className="flex items-center gap-6">
-                <img src={data.avatarUrl} className="w-40 rounded-full" alt="profile picture"/>
+                <img src={data.avatarUrl} className="w-40 aspect-square rounded-full" alt="profile picture"/>
                 <div className="flex flex-col">
                     <p className="text-2xl font-bold">{usernameDisplay.toLowerCase()}</p>
                     <button className="text-lg text-blue-500">Change profile picture</button>

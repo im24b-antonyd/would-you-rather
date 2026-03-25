@@ -1,6 +1,6 @@
 package dev.zwazel.springintro.security.config;
 
-import dev.zwazel.springintro.security.auth.AuthenticationServiceImpl;
+import dev.zwazel.springintro.security.auth.service.AuthenticationServiceImpl;
 import dev.zwazel.springintro.security.auth.payload.RegisterRequest;
 import dev.zwazel.springintro.user.User;
 import dev.zwazel.springintro.user.UserRepository;

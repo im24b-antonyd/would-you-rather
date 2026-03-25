@@ -13,7 +13,6 @@ export default function AccountSettings() {
         e.preventDefault()
 
         deleteUser(data.id).then((response) => {
-            console.log(response)
             localStorage.setItem('currentUser', JSON.stringify([]));
             const savedUser = JSON.parse(localStorage.getItem("currentUser")) || [];
             if (savedUser) {

@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * Data Transfer Object (DTO) for user registration requests.
@@ -119,6 +120,11 @@ public class RegisterRequest {
      *
      * @see StrongPassword - Custom validation annotation enforcing password complexity
      */
+
+    @NotBlank(message = "username is required")
+    private String username;
+
+
     @NotBlank(message = "password is required")
     @StrongPassword
     private String password;
@@ -139,4 +145,6 @@ public class RegisterRequest {
      */
     @NotNull
     private Role role;
+
+
 }

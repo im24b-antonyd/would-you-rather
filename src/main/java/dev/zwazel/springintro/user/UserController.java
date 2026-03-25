@@ -1,28 +1,18 @@
 package dev.zwazel.springintro.user;
 
+import dev.zwazel.springintro.user.dto.UserDTO;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @CrossOrigin("*")
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
 public class UserController {
     private final UserService service;
 
@@ -35,13 +25,13 @@ public class UserController {
 
     @GetMapping("/byUsername/{username}")
     public ResponseEntity<UserDTO> findUserByUsername(@PathVariable("username") String username){
-        UserDTO userDTO = service.findUserByUsername(username);
+        UserDTO userDTO = service.findUserByUsername(username.toLowerCase());
         return ResponseEntity.ok(userDTO);
     }
 
     @GetMapping("/byEmail/{email}")
     public ResponseEntity<UserDTO> findUserByEmail(@PathVariable("email") String email){
-        UserDTO userDTO = service.findUserByEmail(email);
+        UserDTO userDTO = service.findUserByEmail(email.toLowerCase());
         return ResponseEntity.ok(userDTO);
     }
 
@@ -78,7 +68,7 @@ public class UserController {
 
     //Update User
     @PutMapping("/update/{id}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable("id") UUID userId, @RequestBody UserDTO input){
+    public ResponseEntity<UserDTO> updateUser(@PathVariable("id") String userId, @RequestBody UserDTO input){
         UserDTO user = service.updateUser(userId, input);
         return ResponseEntity.ok(user);
     }

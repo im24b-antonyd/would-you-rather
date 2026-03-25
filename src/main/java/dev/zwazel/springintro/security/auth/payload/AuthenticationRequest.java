@@ -1,7 +1,7 @@
 package dev.zwazel.springintro.security.auth.payload;
 
 import dev.zwazel.springintro.security.auth.AuthenticationController;
-import dev.zwazel.springintro.security.auth.AuthenticationService;
+import dev.zwazel.springintro.security.auth.service.AuthenticationService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

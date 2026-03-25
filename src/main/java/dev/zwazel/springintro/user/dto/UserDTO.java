@@ -1,9 +1,6 @@
-package dev.zwazel.springintro.user;
+package dev.zwazel.springintro.user.dto;
 
 import dev.zwazel.springintro.security.Role;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

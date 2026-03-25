@@ -1,6 +1,7 @@
-package dev.zwazel.springintro.security.auth;
+package dev.zwazel.springintro.security.auth.service;
 
 import dev.zwazel.springintro.security.TokenType;
+import dev.zwazel.springintro.security.auth.AuthenticationController;
 import dev.zwazel.springintro.security.auth.payload.AuthenticationRequest;
 import dev.zwazel.springintro.security.auth.payload.AuthenticationResponse;
 import dev.zwazel.springintro.security.auth.payload.RegisterRequest;
@@ -47,16 +48,24 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    /** Spring Security's password hashing/verification utility (uses bcrypt) */
+    /**
+     * Spring Security's password hashing/verification utility (uses bcrypt)
+     */
     private final PasswordEncoder passwordEncoder;
-    
-    /** Service for JWT token operations */
+
+    /**
+     * Service for JWT token operations
+     */
     private final JwtService jwtService;
-    
-    /** Database access for User entity */
+
+    /**
+     * Database access for User entity
+     */
     private final UserRepository userRepository;
-    
-    /** Spring Security's authentication component - validates email/password credentials */
+
+    /**
+     * Spring Security's authentication component - validates email/password credentials
+     */
     private final AuthenticationManager authenticationManager;
 
     /**
@@ -81,15 +90,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public AuthenticationResponse register(RegisterRequest request) {
         // Create new user with hashed password
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+
         var user = User.builder()
                 .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))  // Hash password - never store plain text!
+                .username(request.getUsername())  // Using email as username for simplicity
+                .password(encodedPassword)  // Hash password - never store plain text!
                 .role(request.getRole())  // Assign role (ADMIN or USER)
                 .build();
-        
+
         // Persist user to database
         user = userRepository.save(user);
-        
+
         // Generate JWT token for this user
         var jwt = jwtService.generateToken(user);
 
@@ -138,6 +150,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         // Step 1: Create a token representing the user's credentials (not yet verified)
         // Spring's AuthenticationManager will handle the actual verification
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
@@ -146,13 +159,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         // Now load the user from the database
         var user = userRepository.findUserByEmail(request.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
-        
+
         // Step 3: Extract authorities from user's role
         var roles = user.getRole().getAuthorities()
                 .stream()
                 .map(SimpleGrantedAuthority::getAuthority)
                 .toList();
-        
+
         // Step 4: Generate JWT token for this authenticated user
         var jwt = jwtService.generateToken(user);
 

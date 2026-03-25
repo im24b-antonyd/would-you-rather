@@ -46,13 +46,9 @@ export default function UserPage() {
             const newAvatarUrl = `/uploads/avatar/${uploadedFile.name}`
             const updatedUser = {
                 avatarUrl: newAvatarUrl,
-                username: data.username,
-                email: data.email,
-                password: data.password,
-                displayName: data.displayName
             }
 
-            const updateResponse = await updateUser(data.id, updatedUser);
+            await updateUser(data.id, updatedUser);
             setAvatarUrl(newAvatarUrl)
         } catch (err) {
             console.error(err)

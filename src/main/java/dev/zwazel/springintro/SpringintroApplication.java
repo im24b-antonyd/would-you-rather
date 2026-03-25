@@ -10,6 +10,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * Main entry point for the Spring Boot application.
@@ -164,11 +165,13 @@ public class SpringintroApplication {
      * @param repository User Repository to interact with the Database. Dependency Injected by Spring.
      */
 
+
+    /*
     @Bean
     CommandLineRunner runner(UserRepository repository) {
         return args -> {
             String superStrongPassword = "StrongP@ssw0rd!";
-            String username = "Lucas";
+            String username = "lucas";
             String userMail = "student@example.com";
             if (repository.findUserByEmail(userMail).isEmpty()) {
                 System.out.println("Inserting User into DB...");
@@ -183,7 +186,7 @@ public class SpringintroApplication {
             }
 
             String adminMail = "admin@example.com";
-            String AdminUsername = "Michelle";
+            String AdminUsername = "michelle";
             if (repository.findUserByEmail(adminMail).isEmpty()) {
                 System.out.println("Inserting Admin into DB...");
                 User admin = new User();
@@ -197,4 +200,5 @@ public class SpringintroApplication {
             }
         };
     }
+     */
 }

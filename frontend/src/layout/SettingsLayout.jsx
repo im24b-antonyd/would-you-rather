@@ -19,7 +19,6 @@ export default function SettingsLayout() {
 
     useEffect(() => {
         for (let i = 0; i < allTabs.length; i++) {
-            console.log(`/${allTabs[1].id.replace("Settings", "")}`)
             const tabPath = "/settings/" + allTabs[i].id.replace("Settings", "").toLowerCase();
 
             if (location.pathname === tabPath) {

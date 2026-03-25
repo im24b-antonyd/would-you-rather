@@ -1,14 +1,12 @@
 import {useContext, useEffect, useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
-import {createUser, listUsers} from "../services/UserService.js";
 import {CurrentUserContext} from "../components/CurrentUserContext.jsx";
+import {createUser} from "../services/UserService.js";
 
 export default function Register() {
     const [email, setEmail] = useState("")
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
-    const [avatarUrl, setAvatar] = useState("/uploads/avatar/default-avatar.jpg")
-    const [data, setData] = useState([])
     const {currentUser, setCurrentUser} = useContext(CurrentUserContext)
 
     const [errors, setErrors] = useState({
@@ -59,6 +57,34 @@ export default function Register() {
 
     const loggedIn = Boolean(Object.keys(currentUser).length > 0);
 
+    /*
+
+const checkEmail = async (e) => {
+    const value = e.target.value
+    setEmail(value)
+
+    if (value) {
+        const exists = await isEmailTaken(value)
+        setEmailExist(exists)
+    } else {
+        setEmailExist(false)
+    }
+}
+
+const checkUsername = async (e) => {
+    const value = e.target.value
+    setUsername(value)
+
+    if (value) {
+        const exists = await isUsernameTaken(value)
+        setUsernameExist(exists)
+    } else {
+        setUsernameExist(false)
+    }
+}
+
+ */
+
     useEffect(() => {
         if (loggedIn) {
             navigator("/")
@@ -81,35 +107,21 @@ export default function Register() {
             email: email,
             username: username,
             password: password,
-            avatarUrl: avatarUrl,
-            displayName: username,
-            registerDate: new Date(),
-            lastLoginDate: null,
-            rememberMe: false
         }
-        if (validateForm()) {
-            createUser(user).then((response) => {
-                navigator("/login")
-            }).catch(err => {
-                console.error(err)
-            })
-        }
-    }
 
-    useEffect(() => {
-        listUsers().then((response) => {
-            setData(response.data)
+        createUser(user).then((response) => {
+            navigator("/login")
         }).catch(err => {
             console.error(err)
         })
-    }, []);
 
+    }
+
+    /*
     function validateForm() {
         let valid = true
 
         const errorsCopy = {...errors}
-        const emailExist = data.some(item => item.email === email)
-        const usernameExist = data.some(item => item.username.toLowerCase() === username.toLowerCase())
 
         if (!email.trim()) {
             errorsCopy.email = "Email is required";
@@ -147,6 +159,7 @@ export default function Register() {
 
         return valid;
     }
+     */
 
     return (
         <div
