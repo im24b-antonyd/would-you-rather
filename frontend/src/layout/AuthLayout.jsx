@@ -2,11 +2,10 @@ import NavBar from "../components/NavBar.jsx";
 import {Outlet} from "react-router-dom";
 import {Toaster} from "react-hot-toast";
 
-export default function DashboardLayout() {
+export default function AuthLayout ({ children }) {
     return (
-        <div className="flex">
+        <div>
             <Toaster/>
-            <NavBar/>
             <main className="w-screen">
                 <Outlet/>
             </main>

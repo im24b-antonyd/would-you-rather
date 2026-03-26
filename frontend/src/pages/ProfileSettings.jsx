@@ -1,6 +1,5 @@
 import {useContext, useEffect, useState} from "react";
 import {
-    createUser,
     findUser,
     findUserByUsername,
     listUsers,
@@ -9,6 +8,7 @@ import {
 import {CurrentUserContext} from "../components/CurrentUserContext.jsx";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
+import useAuthStore from "../auth/store.js";
 
 export default function ProfileSettings() {
     const {currentUser, setCurrentUser} = useContext(CurrentUserContext)
@@ -18,12 +18,15 @@ export default function ProfileSettings() {
     const [displayName, setDisplayName] = useState("")
     const [data, setData] = useState([])
 
+    const user = useAuthStore(state => state.user)
+
     const [errors, setErrors] = useState({
         email: '',
         username: '',
         displayName: '',
     })
 
+    /*
     useEffect(() => {
         const savedUser = JSON.parse(localStorage.getItem("currentUser")) || [];
         if (savedUser) {
@@ -34,6 +37,7 @@ export default function ProfileSettings() {
     useEffect(() => {
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
     }, [currentUser]);
+     */
 
     function cancelSubmit(e) {
         e.preventDefault()
@@ -83,20 +87,18 @@ export default function ProfileSettings() {
     }
 
     useEffect(() => {
-        try {
-            findUserByUsername(currentUser.username.replace("@", "")).then((response) => {
-                setData(response.data)
-                setAvatarUrl(response.data.avatarUrl)
-                setDisplayName(response.data.displayName)
-                setUsername(response.data.username)
-                setEmail(response.data.email)
-                setDisplayName(response.data.displayName)
-            });
-        } catch (err) {
-            console.error(err)
-        }
 
-    }, [currentUser]);
+        setData(user)
+        setUsername(user?.username)
+        setDisplayName(user?.displayName)
+        setAvatarUrl(user?.avatarUrl)
+
+    }, [user]);
+
+    const date = new Date(user?.createdAt);
+
+    console.log(user)
+
 
     async function validateForm() {
         let valid = true
@@ -136,8 +138,6 @@ export default function ProfileSettings() {
         return valid;
     }
 
-    const usernameDisplay = `@${currentUser.username}`
-
     useEffect(() => {
         const handler = setTimeout(async () => {
             await validateForm()
@@ -146,20 +146,18 @@ export default function ProfileSettings() {
         return () => clearTimeout(handler)
     }, [username, displayName])
 
-    const registerDate = new Date(data.registerDate)
-
     return (
         <div id="changePasswordSettings" className="p-8 gap-10 flex-col flex ">
             <div className="flex items-center gap-6">
-                <img src={data.avatarUrl} className="w-40 aspect-square rounded-full" alt="profile picture"/>
+                <img src={user?.avatarUrl} className="w-40 aspect-square rounded-full" alt="profile picture"/>
                 <div className="flex flex-col">
-                    <p className="text-2xl font-bold">{usernameDisplay.toLowerCase()}</p>
+                    <p className="text-2xl font-bold">@{user?.username}</p>
                     <button className="text-lg text-blue-500">Change profile picture</button>
                 </div>
             </div>
             <div className="text-neutral-500 flex gap-6 flex-col">
                 <h1 className="text-lg text-black font-bold">Details</h1>
-                <p>Registration Date: {registerDate.toLocaleDateString("de-DE")}</p>
+                <p>Registration Date: {date.toLocaleDateString("de-DE")}</p>
                 <form onSubmit={async (e) => {
                     await handleSubmit(e)
                 }}

@@ -1,10 +1,13 @@
 import {useContext, useEffect, useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {CurrentUserContext} from "./CurrentUserContext.jsx";
+import useAuthStore from "../auth/store.js";
 
 export default function SettingsMenu() {
     const [isOpen, setIsOpen] = useState(false)
     const {setCurrentUser} = useContext(CurrentUserContext)
+
+    const logout = useAuthStore(state => state.logout)
 
     const navigator = useNavigate()
 
@@ -17,11 +20,7 @@ export default function SettingsMenu() {
         }
     }
 
-    function logOut() {
-        localStorage.removeItem("currentUser");
-        setCurrentUser([])
-        return navigator("/login")
-    }
+
 
     return (
         <div
@@ -39,8 +38,7 @@ export default function SettingsMenu() {
                     <p
                         className="hover:bg-slate-200 p-1 rounded-sm"
                         onClick={(e) => {
-                            e.preventDefault()
-                            logOut()
+                            logout()
                         }}
                     >Log out</p>
                 </div>

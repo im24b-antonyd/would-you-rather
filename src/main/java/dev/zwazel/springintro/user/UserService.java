@@ -1,5 +1,6 @@
 package dev.zwazel.springintro.user;
 
+import dev.zwazel.springintro.user.dto.ProfileUserDTO;
 import dev.zwazel.springintro.user.dto.UserDTO;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,10 @@ public interface UserService {
     UserDTO findUser(UUID id);
 
     UserDTO findUserByUsername(String username);
+
+    ProfileUserDTO getProfileUser(String username);
+
+    List<ProfileUserDTO> getAllProfileUsers();
 
     UserDTO findUserByEmail(String email);
 

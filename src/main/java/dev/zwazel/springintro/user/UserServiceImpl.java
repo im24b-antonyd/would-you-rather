@@ -1,7 +1,9 @@
 package dev.zwazel.springintro.user;
 
 import dev.zwazel.springintro.exceptions.ResourceNotFoundException;
+import dev.zwazel.springintro.user.dto.ProfileUserDTO;
 import dev.zwazel.springintro.user.dto.UserDTO;
+import dev.zwazel.springintro.validation.password.StrongPasswordValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,13 +36,17 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Username is required");
         }
 
-        if (userRepository.existsByEmail(userDTO.getEmail())) {
+        if (userRepository.existsByEmail(userDTO.getEmail().toLowerCase())) {
             throw new IllegalArgumentException("Email is already in use");
         }
 
-        if (userRepository.existsByUsername(userDTO.getUsername())) {
+        if (userRepository.existsByUsername(userDTO.getUsername().toLowerCase())) {
             throw new IllegalArgumentException("Username is already in use");
         }
+
+        String username = userDTO.getUsername().toLowerCase();
+        System.out.println("Checking username: " + username);
+
         User user = UserMapper.mapToUser(userDTO);
         user.setUsername(userDTO.getUsername().toLowerCase());
         user.setEmail(userDTO.getEmail().toLowerCase());
@@ -60,6 +66,19 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findUserByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
         return UserMapper.mapToUserDTO(user);
     }
+
+    @Override
+    public ProfileUserDTO getProfileUser(String username) {
+        User user = userRepository.findUserByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
+        return UserMapper.toResponse(user);
+    }
+
+    @Override
+    public List<ProfileUserDTO> getAllProfileUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream().map(UserMapper::toResponse).toList();
+    }
+
 
     @Override
     public UserDTO findUserByEmail(String email) {
@@ -103,7 +122,7 @@ public class UserServiceImpl implements UserService {
 
         user.setUsername(updatedUser.getUsername() != null
                 ? updatedUser.getUsername().toLowerCase()
-                : user.getUsername().toLowerCase());
+                : user.getRealUsername().toLowerCase());
 
 
         User savedUser = userRepository.save(user);

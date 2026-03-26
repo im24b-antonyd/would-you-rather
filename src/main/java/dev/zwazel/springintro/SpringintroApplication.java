@@ -166,9 +166,8 @@ public class SpringintroApplication {
      */
 
 
-    /*
     @Bean
-    CommandLineRunner runner(UserRepository repository) {
+    CommandLineRunner runner(UserRepository repository, PasswordEncoder passwordEncoder) {
         return args -> {
             String superStrongPassword = "StrongP@ssw0rd!";
             String username = "lucas";
@@ -178,7 +177,59 @@ public class SpringintroApplication {
                 User user = new User();
                 user.setEmail(userMail);
                 user.setUsername(username);
-                user.setPassword(superStrongPassword);
+                user.setAvatarUrl("/uploads/avatar/lucasstudent.jpg");
+                user.setPassword(passwordEncoder.encode(superStrongPassword));
+                user.setRole(Role.USER);
+                repository.save(user);
+            } else {
+                System.out.println("User already exists, skipping...");
+            }
+
+            String user2Password = "s0n!c@amY";
+            String username2 = "amy";
+            String userMail2 = "braendlim@bzz.ch";
+            if (repository.findUserByEmail(userMail2).isEmpty()) {
+                System.out.println("Inserting User into DB...");
+                User user = new User();
+                user.setEmail(userMail2);
+                user.setDisplayName("Amy Rose");
+                user.setAvatarUrl("/uploads/avatar/amyrose.png");
+                user.setUsername(username2);
+                user.setPassword(passwordEncoder.encode(user2Password));
+                user.setRole(Role.USER);
+                repository.save(user);
+            } else {
+                System.out.println("User already exists, skipping...");
+            }
+
+            String user3Password = "f@st$esTh1ng";
+            String username3 = "sonic";
+            String userMail3 = "michelle.braendli@hotmail.com";
+            if (repository.findUserByEmail(userMail3).isEmpty()) {
+                System.out.println("Inserting User into DB...");
+                User user = new User();
+                user.setEmail(userMail3);
+                user.setDisplayName("Sonic the Hedgehog");
+                user.setAvatarUrl("/uploads/avatar/sonictuffestshit.png");
+                user.setUsername(username3);
+                user.setPassword(passwordEncoder.encode(user3Password));
+                user.setRole(Role.USER);
+                repository.save(user);
+            } else {
+                System.out.println("User already exists, skipping...");
+            }
+
+            String user4Password = "m@r!A104.";
+            String username4 = "shadow";
+            String userMail4 = "michelle.braendli@student.ksh.ch";
+            if (repository.findUserByEmail(userMail4).isEmpty()) {
+                System.out.println("Inserting User into DB...");
+                User user = new User();
+                user.setEmail(userMail4);
+                user.setDisplayName("The Ultimate Lifeform");
+                user.setAvatarUrl("/uploads/avatar/shadow.webp");
+                user.setUsername(username4);
+                user.setPassword(passwordEncoder.encode(user4Password));
                 user.setRole(Role.USER);
                 repository.save(user);
             } else {
@@ -191,7 +242,7 @@ public class SpringintroApplication {
                 System.out.println("Inserting Admin into DB...");
                 User admin = new User();
                 admin.setEmail(adminMail);
-                admin.setPassword(superStrongPassword);
+                admin.setPassword(passwordEncoder.encode(superStrongPassword));
                 admin.setUsername(AdminUsername);
                 admin.setRole(Role.ADMIN);
                 repository.save(admin);
@@ -200,5 +251,4 @@ public class SpringintroApplication {
             }
         };
     }
-     */
 }

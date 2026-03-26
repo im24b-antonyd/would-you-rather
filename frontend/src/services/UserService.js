@@ -1,27 +1,33 @@
 import axios from "axios";
+import apiClient from "./ApiClient.js";
 
-const REST_API_BASE_URL = "http://localhost:8080/api/v1/users/"
-const REST_API_AUTH_URL = "http://localhost:8080/api/v1/auth/"
+const REST_API_BASE_URL = "http://localhost:8080/api/v1/public"
 
 
 export const listUsers = () => {
-    return axios.get(REST_API_BASE_URL)
+    return apiClient.get("/users")
 }
 
-export const registerUser = (user) => axios.post(`${REST_API_AUTH_URL}register`, user)
-export const loginUser = (user) => axios.post(`${REST_API_AUTH_URL}authenticate`, user)
-export const logoutUser = () => axios.post(`${REST_API_AUTH_URL}logout`)
-export const findUser = (userId) => {
-    return axios.get(`${REST_API_BASE_URL}byId/${userId}`)
+export const registerUser = async (user) => await apiClient.post("/auth/register", user)
+export const loginUser = async (user) => {
+    const response = await apiClient.post("/auth/authenticate", user)
+    return response.data
 }
-export const findUserByUsername = (username) => {
-    return axios.get(`${REST_API_BASE_URL}byUsername/${username}`)
+export const logoutUser = () => apiClient.post("/auth/logout")
+export const findUser = async (userId) => {
+    await apiClient.get(`/users/byId/${userId}`)
+}
+export const findUserByUsername = async (username) => {
+    return apiClient.get(`/byUsername/${username}`)
+}
 
+export const publicUserPage = async (username) => {
+    return axios.get(`${REST_API_BASE_URL}/user/${username}`)
 }
 
 export const findUserByEmail = (username) => {
-    return axios.get(`${REST_API_BASE_URL}byUsername/${username}`)
+    return apiClient().get(`/users/byEmail/${username}`)
 }
 
-export const updateUser = (userId, user) => axios.put(`${REST_API_BASE_URL}update/${userId}`, user)
-export const deleteUser = (userId) => axios.delete(`${REST_API_BASE_URL}delete/${userId}`)
+export const updateUser = (userId, user) => axios.put(`/users/update/${userId}`, user)
+export const deleteUser = (userId) => axios.delete(`/users/delete/${userId}`)

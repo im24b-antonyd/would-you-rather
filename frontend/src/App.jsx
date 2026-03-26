@@ -14,6 +14,7 @@ import ProfileSettings from "./pages/ProfileSettings.jsx";
 import AccountSettings from "./pages/AccountSettings.jsx";
 import SettingsLayout from "./layout/SettingsLayout.jsx";
 import DashboardLayout from "./layout/DashboardLayout.jsx";
+import AuthLayout from "./layout/AuthLayout.jsx";
 
 function App() {
     const [currentUser, setCurrentUser] = useState([])
@@ -36,8 +37,11 @@ function App() {
                     </Route>
                     <Route path="*" element={<NotFound/>}/>
                 </Route>
-                <Route path="/register" element={<Register/>}/>
-                <Route path="/login" element={<Login/>}/>
+                <Route path="/" element={<AuthLayout/>}>
+                    <Route index element={<Login/>}/> {/* optional */}
+                    <Route path="/register" element={<Register/>}/>
+                    <Route path="/login" element={<Login/>}/>
+                </Route>
             </Routes>
         </CurrentUserContext.Provider>
     )

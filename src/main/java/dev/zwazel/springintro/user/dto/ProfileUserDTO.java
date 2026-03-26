@@ -1,7 +1,6 @@
 package dev.zwazel.springintro.user.dto;
 
 import dev.zwazel.springintro.security.Role;
-import dev.zwazel.springintro.validation.password.StrongPassword;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,15 +13,10 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDTO {
-    private UUID id;
-    private String email;
+public class ProfileUserDTO {
     private String username;
     private String displayName;
     private String avatarUrl;
-    private Boolean rememberMe;
-    private Instant createdAt = Instant.now();
-    private Instant lastLoginDate = Instant.now();
-    private String password;
-    private Role role = Role.USER; //default;
+    private Instant createdAt;
+    private Instant lastLoginDate;
 }

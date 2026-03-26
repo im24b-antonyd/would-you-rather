@@ -1,8 +1,22 @@
-import {Link, Outlet, useLocation} from "react-router-dom";
+import {Link, Outlet, useLocation, useNavigate} from "react-router-dom";
 import {useEffect} from "react";
+import useAuthStore from "../auth/store.js";
+import {Toaster} from "react-hot-toast";
 
 export default function SettingsLayout() {
     const allTabs = document.getElementsByClassName("settingsHeader")
+
+    const checkLogin = useAuthStore(state => state.checkLogin)
+
+    const navigate = useNavigate()
+
+    const authStatus = useAuthStore(state => state.authStatus);
+
+    useEffect(() => {
+        if (!authStatus) {
+            navigate("/login");
+        }
+    }, [authStatus, navigate]);
 
     function activeTab(tabID) {
         const currentTab = document.getElementById(tabID)
@@ -31,6 +45,7 @@ export default function SettingsLayout() {
 
     return (
         <div className="flex ">
+            <Toaster/>
             <nav className="flex pt-4 h-screen flex-col border-r border-neutral-300"
             >
                 <div className="p-8 pb-4">

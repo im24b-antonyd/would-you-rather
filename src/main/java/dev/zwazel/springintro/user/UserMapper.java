@@ -1,13 +1,17 @@
 package dev.zwazel.springintro.user;
 
+import dev.zwazel.springintro.user.dto.ProfileUserDTO;
 import dev.zwazel.springintro.user.dto.UserDTO;
+import org.springframework.stereotype.Component;
 
+
+@Component
 public class UserMapper {
     public static UserDTO mapToUserDTO(User user) {
         return new UserDTO(
                 user.getId(),
                 user.getEmail(),
-                user.getUsername(),
+                user.getRealUsername(),
                 user.getDisplayName(),
                 user.getAvatarUrl(),
                 user.getRememberMe(),
@@ -33,4 +37,13 @@ public class UserMapper {
         );
     }
 
+    public static ProfileUserDTO toResponse(User user) {
+        ProfileUserDTO dto = new ProfileUserDTO();
+        dto.setUsername(user.getRealUsername());
+        dto.setDisplayName(user.getDisplayName());
+        dto.setAvatarUrl(user.getAvatarUrl());
+        dto.setCreatedAt(user.getCreatedAt());
+        dto.setLastLoginDate(user.getLastLoginDate());
+        return dto;
+    }
 }

@@ -7,14 +7,23 @@ import dev.zwazel.springintro.security.auth.payload.AuthenticationResponse;
 import dev.zwazel.springintro.security.auth.payload.RegisterRequest;
 import dev.zwazel.springintro.security.jwt.JwtService;
 import dev.zwazel.springintro.user.User;
+import dev.zwazel.springintro.user.UserMapper;
 import dev.zwazel.springintro.user.UserRepository;
+import dev.zwazel.springintro.user.UserService;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
 
 /**
  * Implementation of user authentication and registration.
@@ -52,6 +61,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * Spring Security's password hashing/verification utility (uses bcrypt)
      */
     private final PasswordEncoder passwordEncoder;
+
+    private final UserMapper userMapper;
 
     /**
      * Service for JWT token operations
@@ -92,6 +103,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         // Create new user with hashed password
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
+        if (userRepository.existsByEmail(request.getEmail().toLowerCase())) {
+            throw new IllegalArgumentException("Email is already in use");
+        }
+
+        if (userRepository.existsByUsername(request.getUsername().toLowerCase())) {
+            throw new IllegalArgumentException("Username is already in use");
+        }
+
         var user = User.builder()
                 .email(request.getEmail())
                 .username(request.getUsername())  // Using email as username for simplicity
@@ -114,9 +133,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         // Return user info and token to client
         return AuthenticationResponse.builder()
                 .accessToken(jwt)
-                .email(user.getEmail())
-                .id(user.getId())
-                .roles(roles)
+                .user(userMapper.mapToUserDTO(user))
                 .tokenType(TokenType.BEARER.name())  // "BEARER" indicates JWT token
                 .build();
     }
@@ -151,14 +168,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         // Step 1: Create a token representing the user's credentials (not yet verified)
         // Spring's AuthenticationManager will handle the actual verification
 
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+        String email = request.getEmail();
+        String password = request.getPassword();
 
         // Step 2: If authenticate() didn't throw exception, credentials were valid
         // Now load the user from the database
         var user = userRepository.findUserByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
+                .orElseThrow(() -> new BadCredentialsException("Invalid email or password.") {});
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new BadCredentialsException("Invalid email or password");
+        }
+
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
+
+        user.setLastLoginDate(Instant.now());  // Update last login date for auditing
+
+        userRepository.save(user);
 
         // Step 3: Extract authorities from user's role
         var roles = user.getRole().getAuthorities()
@@ -172,9 +200,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         // Step 5: Return token and user details
         return AuthenticationResponse.builder()
                 .accessToken(jwt)
-                .email(user.getEmail())
-                .id(user.getId())
-                .roles(roles)
+                .user(userMapper.mapToUserDTO(user))
                 .tokenType(TokenType.BEARER.name())  // "BEARER" indicates JWT token
                 .build();
     }

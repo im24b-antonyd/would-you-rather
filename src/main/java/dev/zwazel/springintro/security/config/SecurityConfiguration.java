@@ -113,11 +113,13 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(request ->
                         request
                                 // Rule 1: Public endpoints (no authentication required)
-                                .requestMatchers("/error", "/api/v1/auth/**").permitAll()
+                                .requestMatchers("/error").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/v1/public/**").permitAll()
                                 // Rule 2: Admin-only resource creation
                                 .requestMatchers(HttpMethod.POST, "/api/v1/resource").hasRole("ADMIN")
                                 // Rule 3: Catch-all (all other endpoints require authentication)
-                                .anyRequest().permitAll())
+                                .anyRequest().authenticated())
                 // STEP 4: Use stateless session policy (no server-side sessions)
                 // Each request is independent; state is in JWT token only
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
@@ -133,11 +135,10 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173")); // your frontend
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true); // allow cookies/auth headers
-
+        configuration.setAllowedOrigins(CorsConfigurationValues.ALLOWED_ORIGINS);
+        configuration.setAllowedMethods(CorsConfigurationValues.ALLOWED_METHODS);
+        configuration.setAllowedHeaders(CorsConfigurationValues.ALLOWED_HEADERS);
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

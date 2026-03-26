@@ -3,11 +3,13 @@ package dev.zwazel.springintro.security.auth.payload;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.zwazel.springintro.security.Role;
 import dev.zwazel.springintro.security.auth.AuthenticationController;
+import dev.zwazel.springintro.user.dto.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -74,7 +76,6 @@ public class AuthenticationResponse {
      *
      * Example: "550e8400-e29b-41d4-a716-446655440000"
      */
-    private UUID id;
 
     /**
      * Email address of the authenticated/registered user.
@@ -86,7 +87,7 @@ public class AuthenticationResponse {
      *   <li>Usable for REST endpoints that expect user email parameter</li>
      * </ul>
      */
-    private String email;
+
     /**
      * List of role names for the user (human-readable authorities).
      *
@@ -107,8 +108,9 @@ public class AuthenticationResponse {
      * @see dev.zwazel.springintro.security.Role - Enum mapping roles to privileges
      * @see dev.zwazel.springintro.security.Privilege - Fine-grained permission enumeration
      */
-    private List<String> roles;
+    //private List<String> roles;
 
+    UserDTO user;
     /**
      * JWT access token (encoded as JSON Web Token).
      *

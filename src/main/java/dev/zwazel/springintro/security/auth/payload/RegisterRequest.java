@@ -143,7 +143,7 @@ public class RegisterRequest {
      *
      * @see Role - User role enumeration (ADMIN, USER)
      */
-    @NotNull
+    //@NotNull
     private Role role;
 
 
