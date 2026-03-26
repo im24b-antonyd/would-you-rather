@@ -12,7 +12,6 @@ export default function Login() {
     const [password, setPassword] = useState("")
     const [isChecked, setIsChecked] = useState(false)
     const [error, setError] = useState(null)
-    const {currentUser, setCurrentUser} = useContext(CurrentUserContext)
 
     const login = useAuthStore(state => state.login)
 
@@ -106,26 +105,6 @@ export default function Login() {
             setIsChecked(true)
         }
     }
-
-    useEffect(() => {
-        const savedUser = JSON.parse(localStorage.getItem("currentUser")) || [];
-        if (savedUser) {
-            setCurrentUser(savedUser);
-        }
-    }, [])
-
-
-    const loggedIn = Object.keys(currentUser).length > 0
-    useEffect(() => {
-        if (loggedIn) {
-            navigator("/")
-        }
-
-    }, [loggedIn, navigator]);
-
-    useEffect(() => {
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    }, [currentUser]);
 
     useEffect(() => {
         localStorage.setItem("selectedWallpaper", selectedWallpaper)

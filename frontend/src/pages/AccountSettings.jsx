@@ -25,34 +25,6 @@ export default function AccountSettings() {
         return navigator("/")
     }
 
-    useEffect(() => {
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    }, [currentUser]);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const response = await listUsers();
-            const allUsers = response.data
-
-            try {
-                const user = allUsers.find(item => item.username.toLowerCase() === currentUser.username.toLowerCase())
-                if (!user) return;
-                const response = await findUser(user.id);
-                setData(response.data)
-            } catch (err) {
-                console.error(err)
-            }
-        }
-        fetchData()
-    }, [currentUser]);
-
-    useEffect(() => {
-        const savedUser = JSON.parse(localStorage.getItem("currentUser")) || [];
-        if (savedUser) {
-            setCurrentUser(savedUser);
-        }
-    }, [])
-
     return (
         <div className="p-8">
             <button
