@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/game")
 @RequiredArgsConstructor
@@ -21,10 +23,13 @@ public class GameController {
 
     @GetMapping("/random")
     public ResponseEntity<Question> findRandomQuestion() {
-        long questionCount = questionRepository.count();
-        Long randomId = (long) (Math.random() * questionCount + 1);
-        Question question = questionRepository.findById(randomId).orElseThrow();
-        return ResponseEntity.ok(question);
+        long maxId = questionRepository.findMaxId().orElse(0L);
+        Optional<Question> question = Optional.empty();
+        while (question.isEmpty()) {
+            Long randomId = (long) (Math.random() * maxId + 1);
+            question = questionRepository.findById(randomId);
+        }
+        return ResponseEntity.ok(question.get());
     }
 
     @PostMapping("/create")
