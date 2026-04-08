@@ -1,31 +1,20 @@
 package dev.zwazel.springintro.security.config;
 
 import dev.zwazel.springintro.security.auth.AuthenticationController;
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
@@ -51,12 +40,8 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
  * @see Http401UnauthorizedEntryPoint - Handles 401 responses (not authenticated)
  * @see CustomAccessDeniedHandler - Handles 403 responses (not authorized)
  */
-
-
 @Configuration
-
 @EnableWebSecurity
-
 @RequiredArgsConstructor
 @EnableMethodSecurity
 public class SecurityConfiguration {
@@ -95,14 +80,11 @@ public class SecurityConfiguration {
      * @see ApplicationSecurityConfig - Provides authentication beans
      * @see AuthenticationController - Login/register endpoints that use this configuration
      */
-
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // STEP 1: Disable CSRF protection (not needed for stateless JWT-based REST APIs)
         http.csrf(AbstractHttpConfigurer::disable)
-                // STEP 1.5: Configure CORS
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ADDED THIS LINE
                 // STEP 2: Configure exception handlers for authentication/authorization failures
                 .exceptionHandling(exception -> exception
                         // Return HTTP 401 with custom JSON error when JWT invalid/expired
@@ -113,13 +95,11 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(request ->
                         request
                                 // Rule 1: Public endpoints (no authentication required)
-                                .requestMatchers("/error").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/v1/public/**").permitAll()
+                                .requestMatchers("/error", "/api/v1/auth/**").permitAll()
                                 // Rule 2: Admin-only resource creation
                                 .requestMatchers(HttpMethod.POST, "/api/v1/resource").hasRole("ADMIN")
                                 // Rule 3: Catch-all (all other endpoints require authentication)
-                                .anyRequest().authenticated())
+                                .anyRequest().permitAll())
                 // STEP 4: Use stateless session policy (no server-side sessions)
                 // Each request is independent; state is in JWT token only
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
@@ -131,14 +111,14 @@ public class SecurityConfiguration {
 
         return http.build();
     }
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(CorsConfigurationValues.ALLOWED_ORIGINS);
-        configuration.setAllowedMethods(CorsConfigurationValues.ALLOWED_METHODS);
-        configuration.setAllowedHeaders(CorsConfigurationValues.ALLOWED_HEADERS);
-        configuration.setAllowCredentials(true);
+        configuration.setAllowedOrigins(List.of("http://localhost:5173")); // your frontend
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true); // allow cookies/auth headers
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

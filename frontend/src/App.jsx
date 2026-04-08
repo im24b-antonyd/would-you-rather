@@ -4,6 +4,8 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import {Routes, Route, useLocation} from "react-router-dom";
 import Home from "./pages/Home.jsx";
+import Games from "./pages/Games.jsx"
+import WYR from "./pages/WYR.jsx";
 import Register from "./pages/Register.jsx";
 import Login from "./pages/Login.jsx";
 import NavBar from "./components/NavBar.jsx";
@@ -29,6 +31,8 @@ function App() {
                 <Route path="/" element={<DashboardLayout/>}>
                     <Route index element={<Home/>}/> {/* optional */}
                     <Route path="/home" element={<Home/>}/>
+                    <Route path="/games" element={<Games/>}/>
+                    <Route path="/wyr" element={<WYR/>}/>
                     <Route path="/user/:username" element={<UserPage/>}/>
                     <Route path="/settings" element={<SettingsLayout/>}>
                         <Route index element={<ProfileSettings/>}/> {/* optional */}

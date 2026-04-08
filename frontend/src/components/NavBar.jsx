@@ -14,7 +14,7 @@ export default function NavBar() {
         <div className="p-4 pr-6 pl-6 flex flex-col justify-between h-screen border border-neutral-300">
             <div className="flex flex-col gap-5">
                 <Link to="/" className="text-2xl font-bold">Home</Link>
-                <p>Games</p>
+                <Link to="/games" className="text-2xl font-bold">Games</Link>
             </div>
             <div className="justify-end">
                 {checkLogin() ? (
